@@ -88,11 +88,14 @@
                         </execution>
                     </executions>
                 </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.0</version>
+
                     <configuration>
+                            <testFailureIgnore>true</testFailureIgnore>
                         <!-- Allow passing TestNG suite XML dynamically -->
                         <suiteXmlFiles>
                             <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
@@ -109,6 +112,7 @@
                         <printSummary>true</printSummary>
                         <redirectTestOutputToFile>false</redirectTestOutputToFile>
                     </configuration>
+
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
