@@ -39,4 +39,21 @@ public class LoginPageTest extends BaseTest {
             _login.clickSignIn();
         }
     }
+
+    @Test(groups = {"regression", "patch2", "advanced", "random"}, priority = 1)
+    public void PL_2() {
+
+        _login = new LoginPage(page);
+
+        data = DataRetriever.getSheetData(returnData("PL_2", "Login"));
+
+        if (page != null && !data.isEmpty()) {
+
+            step(_login.isLogoVisible(), "Logo should be visible on login page");
+
+            step(_login.isSignInButtonVisible(), "Sign-in button should be visible");
+
+            step(_login.getSignIn().equals(" Sign In"), "Verify Sign In button text");
+        }
+    }
 }
