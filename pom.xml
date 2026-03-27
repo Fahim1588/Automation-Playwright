@@ -96,6 +96,8 @@
 
                     <configuration>
                             <testFailureIgnore>true</testFailureIgnore>
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
                         <!-- Allow passing TestNG suite XML dynamically -->
                         <suiteXmlFiles>
                             <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
