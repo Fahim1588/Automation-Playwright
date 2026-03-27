@@ -1,0 +1,43 @@
+name: Playwright Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install dependencies
+        run: mvn clean install -DskipTests
+
+      - name: Install Playwright Browsers
+        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
+
+      - name: Run Tests
+        run: mvn test
+        env:
+          CI: true
+          BROWSER: chromium
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: extent-report
+          path: target/reports/
+
+      - name: Upload Videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: videos
+          path: videos/
