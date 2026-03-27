@@ -1,43 +1,44 @@
-name: Playwright Tests
+name: Playwright Test Suite
 
 on:
   push:
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      # 2️⃣ Set up Java
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      - name: Install dependencies
+
+      # 4️⃣ Install project dependencies
+      - name: Maven install
         run: mvn clean install -DskipTests
 
-      - name: Install Playwright Browsers
-        run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
 
-      - name: Run Tests
-        run: mvn test
-        env:
-          CI: true
-          BROWSER: chromium
+      # 6️⃣ Run TestNG suite
+      - name: Run Playwright tests
+        run: mvn test -DsuiteXmlFile=src/test/resources/testsuite.xml
 
-      - name: Upload Report
-        uses: actions/upload-artifact@v4
+      # 7️⃣ Upload ExtentReports, videos, and Surefire reports
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: extent-report
-          path: target/reports/
-
-      - name: Upload Videos
-        uses: actions/upload-artifact@v4
-        with:
-          name: videos
-          path: videos/
+          name: Playwright-Test-Reports
+          path: |
+            target/reports/**/*.html
+            target/surefire-reports/

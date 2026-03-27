@@ -20,8 +20,8 @@ import java.util.stream.IntStream;
 
 public class BasePage {
 
-    public static Page page;
-    public static ExtentReport logger;
+    protected Page page;
+    protected ExtentReport logger;
     public BasePage(Page page) {
         this.page = page;
         this.logger = logger;
