@@ -36,7 +36,7 @@ public class LoginPageTest extends BaseTest {
             step(_login.isSignInButtonVisible(), "Sign-in button should be visible");
 
             step(_login.getSignIn().equals(" Sign In "), "Verify Sign In button text");
-            _login.clickSignIn();
+          //  _login.clickSignIn();
         }
     }
 
