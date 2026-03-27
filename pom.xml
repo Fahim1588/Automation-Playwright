@@ -93,28 +93,28 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.0</version>
-
                     <configuration>
-                            <testFailureIgnore>true</testFailureIgnore>
-                        <forkCount>1</forkCount>
-                        <reuseForks>true</reuseForks>
-                        <!-- Allow passing TestNG suite XML dynamically -->
+                        <!-- Use TestNG suite XML file -->
                         <suiteXmlFiles>
-                            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
+                            <suiteXmlFile>${basedir}/testsuite.xml</suiteXmlFile>
                         </suiteXmlFiles>
 
-                        <!-- Parallel execution -->
-                        <parallel>tests</parallel>
-                        <threadCount>2</threadCount>
+                        <!-- Forking configuration -->
+                        <forkCount>1</forkCount>
+                        <reuseForks>true</reuseForks>
 
-                        <!-- Fail build if tests fail -->
+                        <!-- Optional: ignore failures but still record reports -->
                         <testFailureIgnore>false</testFailureIgnore>
 
-                        <!-- Verbose output -->
-                        <printSummary>true</printSummary>
-                        <redirectTestOutputToFile>false</redirectTestOutputToFile>
-                    </configuration>
+                        <!-- Ensure correct output handling -->
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
 
+                        <!-- Optional: Include system properties -->
+                        <systemPropertyVariables>
+                            <remoteUrl>${remoteUrl}</remoteUrl>
+                            <headless>false</headless>
+                        </systemPropertyVariables>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
