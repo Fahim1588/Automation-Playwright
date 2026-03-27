@@ -93,28 +93,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.5.0</version>
+
                     <configuration>
-                        <!-- Use TestNG suite XML file -->
+                            <testFailureIgnore>true</testFailureIgnore>
+                        <forkCount>0</forkCount>
+                        <reuseForks>false</reuseForks>
+                        <!-- Allow passing TestNG suite XML dynamically -->
                         <suiteXmlFiles>
-                            <suiteXmlFile>${basedir}/testsuite.xml</suiteXmlFile>
+                            <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                         </suiteXmlFiles>
-
-                        <!-- Forking configuration -->
-                        <forkCount>1</forkCount>
-                        <reuseForks>true</reuseForks>
-
-                        <!-- Optional: ignore failures but still record reports -->
+                        <!-- Fail build if tests fail -->
                         <testFailureIgnore>false</testFailureIgnore>
 
-                        <!-- Ensure correct output handling -->
-                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
-
-                        <!-- Optional: Include system properties -->
-                        <systemPropertyVariables>
-                            <remoteUrl>${remoteUrl}</remoteUrl>
-                            <headless>false</headless>
-                        </systemPropertyVariables>
+                        <!-- Verbose output -->
+                        <printSummary>true</printSummary>
+                        <redirectTestOutputToFile>false</redirectTestOutputToFile>
                     </configuration>
+
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
