@@ -103,7 +103,10 @@ public class ExtentReport {
         }
     }
 
-    public void close() {
-        extent.flush();
+    public static void close() {
+        if (extent != null) {
+            extent.flush();
+            System.out.println("Extent Report flushed successfully.");
+        }
     }
 }

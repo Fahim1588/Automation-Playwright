@@ -1,45 +1,53 @@
-name: Playwright Test Suite
+name: Playwright Java Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  Playwright-Tests:
+  playwright-tests:
     runs-on: ubuntu-latest
 
-    steps:
-      # 1️⃣ Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    strategy:
+      matrix:
+        java-version: [17]
+    timeout-minutes: 30
 
-      # 2️⃣ Set up Java
-      - name: Set up Java 17
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: ${{ matrix.java-version }}
 
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-      # 4️⃣ Install project dependencies
-      - name: Maven install
-        run: mvn clean install -DskipTests
+      - name: Install dependencies
+        run: mvn -B clean install -DskipTests
 
-
-      # 6️⃣ Run TestNG suite
       - name: Run Playwright tests
-        run: mvn test -DsuiteXmlFile=src/test/resources/testsuite.xml
+        run: mvn test -Dsurefire.suiteXmlFiles=testsuite.xml -Dheadless=true
 
-      # 7️⃣ Upload ExtentReports, videos, and Surefire reports
-      - name: Upload test artifacts
+      - name: Upload test report
         uses: actions/upload-artifact@v4
         with:
-          name: Playwright-Test-Reports
-          path: |
-            target/reports/**/*.html
-            target/videos/**/*.webm
-            target/surefire-reports/
+          name: ExtentReport
+          path: target/reports/
+
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestVideos
+          path: target/videos/

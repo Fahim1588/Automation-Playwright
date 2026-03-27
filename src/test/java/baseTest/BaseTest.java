@@ -2,12 +2,13 @@ package baseTest;
 
 import base.BasePage;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Browser;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 import playwrightPractice.utilities.*;
 
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,107 +17,109 @@ import java.util.Map;
 public class BaseTest {
 
     protected Page page;
-    protected static ExtentReport logger;
+    protected BrowserContext context;
+    protected Browser browser;
+    protected ExtentReport logger;
 
     protected static final String PROJECT_NAME = "Playwright-A1";
 
     public String returnData(String rowData, String table) {
-        BasePage.logWithTimestamp("Fetching test data for: " + rowData);
-
         DataRetriever.readExcel();
-
         Map<String, String> testFilter = new HashMap<>();
         testFilter.put("TestCaseName", rowData);
-
-        String data = DataRetriever.getQuery(table, testFilter);
-
-        BasePage.logWithTimestamp("Data fetched successfully");
-
-        return data;
+        return DataRetriever.getQuery(table, testFilter);
     }
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
-        BasePage.logWithTimestamp("===== Test Class Initialization Started =====");
-
+        BasePage.logWithTimestamp("@BeforeClass: Initializing ExtentReport");
         Config cfg = new Config();
 
         if (ExtentReport.extent == null) {
             String reportPath = System.getProperty("user.dir") + "/target/reports/"
-                    + PROJECT_NAME + "-" + format() + "-" + cfg.getProperty("browser") + ".html";
-
+                    + PROJECT_NAME + "-" + format() + ".html";
             cfg.setProperty("extent.report.pathname", reportPath);
 
-            BasePage.logWithTimestamp("Initializing Extent Report at: " + reportPath);
-
+            BasePage.logWithTimestamp("Initializing ExtentReport at: " + reportPath);
             logger = new ExtentReport(cfg);
+           // logger.setThemeDark(true); // dark theme
         }
     }
 
     @BeforeMethod(alwaysRun = true)
     public void beforeMethod(Method method) {
-
-        BasePage.logWithTimestamp("----- Starting Test: " + method.getName() + " -----");
-
         Config cfg = new Config();
+        String browserName = cfg.getProperty("browser");
+        boolean runHeadless = Boolean.parseBoolean(cfg.getProperty("headless"));
+        String remoteUrl = cfg.getProperty("remoteUrl", "");
 
-        page = Browsers.getDriver(
-                cfg.getProperty("browser"),
-                cfg.getProperty("headless"),
-                cfg.getProperty("remoteUrl")
-        );
+        BasePage.logWithTimestamp("Launching browser: " + browserName + ", headless: " + runHeadless);
 
-        BasePage.logWithTimestamp("Navigating to URL: " + cfg.getProperty("url"));
+        // get fresh browser and page for each test
+        page = Browsers.getDriver(browserName, Boolean.toString(runHeadless), remoteUrl);
+        context = page.context();
+        browser = context.browser();
 
-        page.navigate(cfg.getProperty("url"));
+        // navigate to URL
+        String appUrl = cfg.getProperty("url");
+        BasePage.logWithTimestamp("Navigating to URL: " + appUrl);
+        page.navigate(appUrl);
+        BasePage.logWithTimestamp("Current page URL: " + page.url());
 
         logger.createTestCase(method.getName(), "Test case for " + method.getName());
     }
 
     @AfterMethod(alwaysRun = true)
     public void afterMethod(ITestResult result) {
-
         BasePage.logWithTimestamp("Test execution completed for: " + result.getName());
 
         if (result.getStatus() == ITestResult.FAILURE) {
-
             BasePage.logWithTimestamp("Test FAILED: " + result.getName());
             ExtentReport.logFail("Test Failed: " + result.getName());
             ExtentReport.captureFailure(page, "Failure Screenshot");
 
-            Browsers.closeAll(page);
-
-            BasePage.logWithTimestamp("----- Test Finished: " + result.getName() + " -----");
+            try {
+                BasePage.logWithTimestamp("Attaching failure video...");
+                logger.attachVideo(page);
+            } catch (Exception e) {
+                BasePage.logWithTimestamp("Video attach failed: " + e.getMessage());
+            }
+        } else if (result.getStatus() == ITestResult.SUCCESS) {
+            BasePage.logWithTimestamp("Test PASSED: " + result.getName());
+            ExtentReport.logPass("Test Passed: " + result.getName());
+        } else {
+            BasePage.logWithTimestamp("Test SKIPPED: " + result.getName());
         }
-    }
-    @AfterClass(alwaysRun = true)
-    public void afterClass() {
-        BasePage.logWithTimestamp("Flushing Extent Reports...");
 
-        if (ExtentReport.extent != null) {
-            ExtentReport.extent.flush();
+        // close browser after each test (parallel-safe)
+        try {
+            if (context != null) context.close();
+            if (browser != null) browser.close();
+        } catch (Exception e) {
+            BasePage.logWithTimestamp("Teardown error: " + e.getMessage());
         }
-
-        BasePage.logWithTimestamp("===== Test Class Execution Completed =====");
     }
 
     public void step(boolean condition, String message) {
         if (!condition) {
-            BasePage.logWithTimestamp("Step FAILED: " + message);
-            ExtentReport.logFail(message);
             ExtentReport.captureFailure(page, message);
             throw new AssertionError(message);
         } else {
-            BasePage.logWithTimestamp("Step PASSED: " + message);
             ExtentReport.logPass(message);
         }
     }
 
     public String format() {
-        return format(new Date());
+        Date nowIs = new Date();
+        return format(nowIs);
     }
 
     public static String format(Date date) {
-        return new SimpleDateFormat("yyyyMMdd-HHmmss").format(date);
+        SimpleDateFormat sm = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        return sm.format(date);
+    }
+    @AfterSuite(alwaysRun = true)
+    public void tearDownSuite() {
+        ExtentReport.close();
     }
 }
