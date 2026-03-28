@@ -38,7 +38,7 @@ jobs:
         run: mvn -B clean install -DskipTests
 
       - name: Run Playwright tests
-        run: mvn test -Dsurefire.suiteXmlFiles=testsuite.xml -Dheadless=true
+        run: mvn test -Dsurefire.suiteXmlFiles=testsuite.xml -Dheadless=true -Dbrowser=chrome -Durl=https://ldoe.edlink.la.gov/#/
         continue-on-error: true
 
       - name: Upload test report

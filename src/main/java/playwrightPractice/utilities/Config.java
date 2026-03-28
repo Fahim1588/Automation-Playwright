@@ -18,13 +18,17 @@ public class Config {
         String value = this.configFile.getProperty(key);
         return value;
     }
-    public String getProperty(String key, String defaultValue) {
+   /* public String getProperty(String key, String defaultValue) {
         String value = this.getProperty(key); // existing single-arg getProperty
         return value != null ? value : defaultValue;
-    }
+    }*/
 
     public String setProperty(String key, String value) {
         configFile.setProperty(key, value);
         return configFile.getProperty(key);
+    }
+
+    public String getRuntimeProperty(String key) {
+        return System.getProperty(key, getProperty(key));
     }
 }
