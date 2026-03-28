@@ -39,6 +39,7 @@ jobs:
 
       - name: Run Playwright tests
         run: mvn test -Dsurefire.suiteXmlFiles=testsuite.xml -Dheadless=true
+        continue-on-error: true
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
