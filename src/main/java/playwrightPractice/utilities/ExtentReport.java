@@ -79,14 +79,14 @@ public class ExtentReport {
 
         if (testThread.get() != null)
             testThread.get().info(
-                    "<span style='color:blue'>" + message + "</span>");
+                    "<span style='color:blue'>"+"INFO ➤ " + message + "</span>");
     }
 
 
     public static void logPass(String message) {
 
         if (testThread.get() != null)
-            testThread.get().pass(
+            testThread.get().pass("<span style='color:green; font-weight:bold;'>PASS ➤ </span>" +
                     "<span style='color:green'>" + message + "</span>");
     }
 
@@ -94,7 +94,7 @@ public class ExtentReport {
     public static void logFail(String message) {
 
         if (testThread.get() != null)
-            testThread.get().fail(
+            testThread.get().fail("<span style='color:red; font-weight:bold;'>FAIL ➤ </span>" +
                     "<span style='color:red'>" + message + "</span>");
     }
 
@@ -102,7 +102,7 @@ public class ExtentReport {
     public static void logWarn(String message) {
 
         if (testThread.get() != null)
-            testThread.get().warning(
+            testThread.get().warning("<span style='color:orange; font-weight:bold;'>WARN ➤ </span>" +
                     "<span style='color:orange'>" + message + "</span>");
     }
 

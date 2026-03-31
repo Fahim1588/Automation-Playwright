@@ -29,7 +29,7 @@ public class Browsers {
             BasePage.logWithTimestamp("Launching local browser: " + browserName);
             BrowserType.LaunchOptions options = new BrowserType.LaunchOptions()
                     .setHeadless(runHeadless)
-                    .setArgs(Arrays.asList("--no-sandbox", "--disable-dev-shm-usage"));
+                    .setArgs(Arrays.asList("--no-sandbox", "--disable-dev-shm-usage","--start-maximized"));
 
             switch (browserName.toLowerCase()) {
                 case "firefox":
@@ -49,9 +49,13 @@ public class Browsers {
         BrowserContext context = browser.newContext(
                 new Browser.NewContextOptions()
                         .setAcceptDownloads(true)
-                        .setViewportSize(1325, 744)
+                        .setViewportSize(null)
                         .setRecordVideoDir(Paths.get(System.getProperty("user.dir"), "target/videos/")) // save under target
                         .setRecordVideoSize(1280, 720)
+                        .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36")
+                        .setTimezoneId("America/New_York")
+                        .setGeolocation(33.7490, -84.3880) // Atlanta area
+                        .setPermissions(Arrays.asList("geolocation"))
         );
 
         BasePage.logWithTimestamp("Browser context initialized, video recording enabled at target/videos/");
