@@ -2,9 +2,9 @@ name: Playwright Java Tests
 
 on:
   push:
-    branches: [ Fahim ]
+    branches: [ main ]
   pull_request:
-    branches: [ Fahim ]
+    branches: [ main ]
 
 jobs:
   playwright-tests:
