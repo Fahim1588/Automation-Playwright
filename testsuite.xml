@@ -2,16 +2,16 @@
 <suite name="AutomationSuite" parallel="tests" thread-count="1" verbose="1">
 
     <!-- First run of LoginPageTest -->
-    <test name="LoginPageTest_Run1">
+    <test name="HomePageTest_Run1">
         <classes>
-            <class name="tests.LoginPageTest"/>
+            <class name="tests.HomePageTest"/>
         </classes>
     </test>
 
     <!-- Second run of LoginPageTest -->
-    <test name="LoginPageTest_Run2">
+    <test name="HomePageTest_Run2">
         <classes>
-            <class name="tests.LoginPageTest"/>
+            <class name="tests.HomePageTest"/>
         </classes>
     </test>
 

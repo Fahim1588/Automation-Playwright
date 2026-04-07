@@ -24,9 +24,30 @@ public class BasePage {
     protected ExtentReport logger;
     public BasePage(Page page) {
         this.page = page;
-        this.logger = logger;
+        //this.logger = logger;
     }
 
+    public boolean isElementVisible(Locator locator) {
+        step("Checking visibility of element: " + locator);
+        locator.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        boolean visible = locator.isVisible();
+        logWithTimestamp("Element visibility: " + visible);
+        return visible;
+    }
+
+    public void hoverOnElement(Locator locator) {
+        step("Hovering over element: " + locator);
+        locator.hover();
+        logWithTimestamp("Hovered on element: " + locator);
+    }
+
+    public void clickElement(Locator locator) {
+        step("Clicking on element: " + locator);
+        locator.click();
+        logWithTimestamp("Clicked on element: " + locator);
+    }
+
+//previous Code with Selenium WebDriver is removed and replaced with Playwright code below
 
     public Locator findState(String searchText) {
         return page.locator("//span[@class='mdc-list-item__primary-text' and contains(text(),'" + searchText + "')]");
@@ -589,25 +610,7 @@ public class BasePage {
         System.out.println(timestamp + " - " + message);
     }
 
-    /*public static void logInfo(String message) {
-        logger.infoTestCase(message);
-        logWithTimestamp("info - " + message);
-    }
 
-    public void logPass(String message) {
-        logger.passTestCase(message);
-        logWithTimestamp("pass - " + message);
-    }
-
-    public void logFail(String message) {
-        logger.failTestCase(message);
-        logWithTimestamp("fail - " + message);
-    }*/
-
-    /*public static void logInfo2(String message) {
-        logger.info2TestCase(message);
-        logWithTimestamp("logInfo2 - " + message);
-    }*/
 
     public String removeNonAlphabetical(String input) {
         return input.replaceAll("[^a-zA-Z\\s]", "").trim();
@@ -640,6 +643,8 @@ public class BasePage {
         }
         return lastNumber;
     }
+    //=====================================================================================
+    //=====================================================================================
 
     private static final ThreadLocal<String> currentStep = new ThreadLocal<>();
 
